@@ -102,30 +102,36 @@
         function PaginaDeCadastro() {
             const [email, setEmail] = React.useState('');
             const [senha, setSenha] = React.useState('');
+            const [confirmarSenha, setConfirmarSenha] = React.useState('');
 
-            const handleSubmit = (evento) => {
+            const handleSubmit = async (evento) => {
                 evento.preventDefault();
                 
-                // Pega a lista atual de usuários ou cria uma nova
-                const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-                
-                // Verifica se o email já existe
-                if (usuarios.some(usuario => usuario.email === email)) {
-                    alert('Este email já está cadastrado!');
+                if (senha !== confirmarSenha) {
+                    alert('As senhas não coincidem!');
                     return;
                 }
-                
-                // Adiciona o novo usuário
-                usuarios.push({
-                    email: email,
-                    senha: senha
-                });
-                
-                // Salva a lista atualizada
-                localStorage.setItem('usuarios', JSON.stringify(usuarios));
-                
-                alert('Cadastro realizado com sucesso!');
-                window.location.href = "TelaLogin.html";
+
+                try {
+                    const response = await fetch('http://localhost:3000/api/users/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ email, senha })
+                    });
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.error || 'Erro ao fazer cadastro');
+                    }
+
+                    alert('Cadastro realizado com sucesso!');
+                    window.location.href = 'TelaLogin.html';
+                } catch (error) {
+                    alert(error.message);
+                }
             };
 
             return (
@@ -147,6 +153,13 @@
                                 placeholder="Digite sua senha"
                                 value={senha}
                                 onChange={evento => setSenha(evento.target.value)}
+                            />
+                            <CampoDeDigitacao
+                                label="confirmarSenha"
+                                tipo="password"
+                                placeholder="Confirme sua senha"
+                                value={confirmarSenha}
+                                onChange={evento => setConfirmarSenha(evento.target.value)}
                             />
                             <Botao>Cadastrar</Botao>
                         </form>
