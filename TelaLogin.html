@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./Style/TelaLogin.css" />
+
+    <title>Login</title>
+</head>
+
+<body>
+    <div id="root">
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"
+        integrity="sha512-8Q6Y9XnTbOE+JNvjBQwJ2H8S+UV4uA6hiRykhdtIyDYZ2TprdNmWOUaKdGzOhyr4dCyk287OejbPvwl7lrfqrQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"
+        integrity="sha512-MOCpqoRoisCTwJ8vQQiciZv0qcpROCidek3GTFS6KTk2+y7munJIlKCVkFCYY+p3ErYFXCjmFjnfTTRSC1OHWQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.3/babel.min.js"
+        integrity="sha512-MIXku7j6pJ0hqd2T4WXZMGerp3BU9B91rfLRDp/McDBNNdnwTD+yLJaz9AHcYXT6k16dYTkG9S2KRPGxaBIfBQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/babel">
+
+
+        function Titulo({ children }) {
+            return (
+                <h1 className="form_titulo">{children}</h1>
+            )
+        }
+
+        //O Subtitulo agora recebe children como prop, permitindo que o texto seja dinâmico.
+        //Em resumo, você pode usar da seguinte forma: <Titulo>Olá estudantes</Titulo>. atribuindo o texto "Olá estudantes" ao children juntamente a característica de ser dinâmico.
+
+        function Subtitulo({ children }) {
+            return (
+                <h2 className="form_subtitulo">{children}</h2>
+            )
+        }
+
+        function CampoDeDigitacao({ label, tipo, placeholder, value, onChange }) {
+            return (
+                <div className="form__campo-digitacao">
+                    <label htmlFor={label}>{label}</label>
+                    <input
+                        id={label}
+                        type={tipo}
+                        placeholder={placeholder}
+                        required value={value}
+                        onChange={onChange}
+                    />
+                </div>
+            );
+        }
+
+        function Botao({ tipo, children }) {
+            return (
+                <button className="form__botao" tipo="submit">{children}</button>
+            )
+        }
+
+        function Checkbox() {
+            return (
+                <div>
+                    <div className='form__campo-checkbox'>
+                        <input type='checkbox' id='lembrar' />
+                        <label htmlFor='lembrar' />
+                    </div>
+                    <p className='form__opcoes-texto'></p>
+                </div>
+            )
+        }
+
+        function Texto({ classe, children }) {
+            return (
+                <p className={classe}>{children}</p>
+            )
+        }
+
+        function ItemRedesSociais({ link, nome }) {
+            return (
+                <li>
+                    <a href={link}>
+                        <img src={`./img/${nome}.svg`} alt={`ícone do ${nome}`} />
+                        {nome}
+                    </a>
+                </li>
+            )
+        }
+
+        function Link({ children }) {
+            const handleClick = (e) => {
+                e.preventDefault();
+                // Troque o caminho conforme sua estrutura de pastas
+                if (children === "Fazer login") {
+                    window.location.href = "TelaLogin.html";
+                } else if (children === "Crie uma conta") {
+                    window.location.href = "TelaCadastro.html";
+                }
+            };
+
+            return (
+                <a href="#" className="container-links__link" onClick={handleClick}>
+                    {children}
+                </a>
+            )
+        }
+
+        function PaginaDeLogin() {
+            const [email, setEmail] = React.useState('');
+            const [senha, setSenha] = React.useState('');
+
+            // Verifica se já está logado
+            React.useEffect(() => {
+                const usuarioLogado = localStorage.getItem('usuarioLogado');
+                if (usuarioLogado === 'true') {
+                    window.location.href = "TelaPrincipal.html";
+                }
+            }, []);
+
+            const handleSubmit = (evento) => {
+                evento.preventDefault();
+                
+                // Pega a lista de usuários cadastrados
+                const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+                
+                // Procura o usuário na lista
+                const usuarioEncontrado = usuarios.find(
+                    usuario => usuario.email === email.toLowerCase().trim() && 
+                             usuario.senha === senha.trim()
+                );
+                
+                if (usuarioEncontrado) {
+                    // Salva no localStorage que o usuário está logado
+                    localStorage.setItem('usuarioLogado', 'true');
+                    localStorage.setItem('emailUsuario', usuarioEncontrado.email);
+                    window.location.href = "TelaPrincipal.html";
+                } else {
+                    alert('Email ou senha incorretos. Verifique suas credenciais ou crie uma conta.');
+                }
+            };
+
+            return (
+                <div className="container-login">
+                    <section>
+                        <Titulo>Bem-vindo de volta</Titulo>
+                        <Subtitulo>Faça login</Subtitulo>
+                        <form onSubmit={handleSubmit} className="form">
+                            <CampoDeDigitacao
+                                label="email"
+                                tipo="text"
+                                placeholder="Digite seu email"
+                                value={email}
+                                onChange={evento => setEmail(evento.target.value)}
+                            />
+                            <CampoDeDigitacao
+                                label="senha"
+                                tipo="password"
+                                placeholder="Digite sua senha"
+                                value={senha}
+                                onChange={evento => setSenha(evento.target.value)}
+                            />
+                            <Botao>Login</Botao>
+                        </form>
+                        <div className="container-links">
+                            <Link>Crie uma conta</Link>
+                        </div>
+                    </section>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<PaginaDeLogin />)
+    </script>
+</body>
+
+</html>

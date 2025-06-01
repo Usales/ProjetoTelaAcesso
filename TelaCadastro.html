@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.auth0.com/js/auth0-spa-js/1.13/auth0-spa-js.production.js"></script>
+    <link rel="stylesheet" href="./Style/TelaCadastro.css" />
+    <title>Cadastro</title>
+    <link rel="script" href="ValidaçãoDeSenha.js" />
+</head>
+
+<body>
+    <div id="root"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"
+        integrity="sha512-8Q6Y9XnTbOE+JNvjBQwJ2H8S+UV4uA6hiRykhdtIyDYZ2TprdNmWOUaKdGzOhyr4dCyk287OejbPvwl7lrfqrQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"
+        integrity="sha512-MOCpqoRoisCTwJ8vQQiciZv0qcpROCidek3GTFS6KTk2+y7munJIlKCVkFCYY+p3ErYFXCjmFjnfTTRSC1OHWQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.3/babel.min.js"
+        integrity="sha512-MIXku7j6pJ0hqd2T4WXZMGerp3BU9B91rfLRDp/McDBNNdnwTD+yLJaz9AHcYXT6k16dYTkG9S2KRPGxaBIfBQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/babel">
+
+        //O Subtitulo agora recebe children como prop, permitindo que o texto seja dinâmico.
+        //Em resumo, você pode usar da seguinte forma: <Titulo>Olá estudantes</Titulo>. atribuindo o texto "Olá estudantes" ao children juntamente a característica de ser dinâmico.
+        function Titulo({ children }) {
+            return (
+                <h1 className="form_titulo">{children}</h1>
+            )
+        }
+
+        function Subtitulo({ children }) {
+            return (
+                <h2 className="form_subtitulo">{children}</h2>
+            )
+        }
+
+        //CampoDeDigitacao agora recebe props como label, tipo, placeholder, value e onChange, permitindo que o componente seja reutilizado com diferentes valores.
+        function CampoDeDigitacao({ label, tipo, placeholder, value, onChange }) {
+            return (
+                <div className="form__campo-digitacao">
+                    <label htmlFor={label}>{label}</label>
+                    <input
+                        id={label}
+                        type={tipo}
+                        placeholder={placeholder}
+                        required value={value}
+                        onChange={onChange}
+                    />
+                </div>
+            );
+        }
+
+        //CampoDeDigitacao agora recebe props como label, tipo, placeholder, value e onChange, permitindo que o componente seja reutilizado com diferentes valores.
+        // Por exemplo, você pode usar <CampoDeDigitacao label="Email" tipo="email" placeholder="Digite seu email" value={email} onChange={handleEmailChange} /> para criar um campo de email.
+        function Botao({ tipo, children }) {
+            return (
+                <button className="form__botao" tipo="submit">{children}</button>
+            )
+        }
+
+        function Texto({ classe, children }) {
+            return (
+                <p className={classe}>{children}</p>
+            )
+        }
+
+        function ItemRedesSociais({ link, nome }) {
+            return (
+                <li>
+                    <a href={link}>
+                        <img src={`./img/${nome}.svg`} alt={`ícone do ${nome}`} />
+                        {nome}
+                    </a>
+                </li>
+            )
+        }
+
+        function Link({ children }) {
+            const handleClick = (e) => {
+                e.preventDefault();
+                // Troque o caminho conforme sua estrutura de pastas
+                if (children === "Fazer login") {
+                    window.location.href = "TelaLogin.html";
+                } else if (children === "Crie uma conta") {
+                    window.location.href = "TelaCadastro.html";
+                }
+            };
+
+            return (
+                <a href="#" className="container-links__link" onClick={handleClick}>
+                    {children}
+                </a>
+            );
+        }
+
+        function PaginaDeCadastro() {
+            const [email, setEmail] = React.useState('');
+            const [senha, setSenha] = React.useState('');
+
+            const handleSubmit = (evento) => {
+                evento.preventDefault();
+                
+                // Pega a lista atual de usuários ou cria uma nova
+                const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+                
+                // Verifica se o email já existe
+                if (usuarios.some(usuario => usuario.email === email)) {
+                    alert('Este email já está cadastrado!');
+                    return;
+                }
+                
+                // Adiciona o novo usuário
+                usuarios.push({
+                    email: email,
+                    senha: senha
+                });
+                
+                // Salva a lista atualizada
+                localStorage.setItem('usuarios', JSON.stringify(usuarios));
+                
+                alert('Cadastro realizado com sucesso!');
+                window.location.href = "TelaLogin.html";
+            };
+
+            return (
+                <div className="container-login">
+                    <section>
+                        <Titulo>Bem-vindo</Titulo>
+                        <Subtitulo>Crie sua conta</Subtitulo>
+                        <form onSubmit={handleSubmit} className="form">
+                            <CampoDeDigitacao
+                                label="email"
+                                tipo="email"
+                                placeholder="Digite seu email"
+                                value={email}
+                                onChange={evento => setEmail(evento.target.value)}
+                            />
+                            <CampoDeDigitacao
+                                label="senha"
+                                tipo="password"
+                                placeholder="Digite sua senha"
+                                value={senha}
+                                onChange={evento => setSenha(evento.target.value)}
+                            />
+                            <Botao>Cadastrar</Botao>
+                        </form>
+                        <div className="container-links">
+                            <Texto classe="container-links__titulo">ou entre com outras contas</Texto>
+                            <ul>
+                                <ItemRedesSociais link="https://www.google.com" nome="google" />
+                                <ItemRedesSociais link="https://www.github.com" nome="github" />
+                            </ul>
+                            <Link>Fazer login</Link>
+                        </div>
+                    </section>
+                </div>
+            );
+        }
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<PaginaDeCadastro />);
+    </script>
+</body>
+
+</html>

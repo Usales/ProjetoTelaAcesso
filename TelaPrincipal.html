@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="./Style/TelaPrincipal.css" rel="stylesheet">
+    <title>Home</title>
+</head>
+
+<body>
+    <div id="root">
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"
+        integrity="sha512-8Q6Y9XnTbOE+JNvjBQwJ2H8S+UV4uA6hiRykhdtIyDYZ2TprdNmWOUaKdGzOhyr4dCyk287OejbPvwl7lrfqrQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"
+        integrity="sha512-MOCpqoRoisCTwJ8vQQiciZv0qcpROCidek3GTFS6KTk2+y7munJIlKCVkFCYY+p3ErYFXCjmFjnfTTRSC1OHWQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.3/babel.min.js"
+        integrity="sha512-MIXku7j6pJ0hqd2T4WXZMGerp3BU9B91rfLRDp/McDBNNdnwTD+yLJaz9AHcYXT6k16dYTkG9S2KRPGxaBIfBQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script type="text/babel">
+        function Logout() {
+            const handleLogout = () => {
+                // Remove os dados do usuário do localStorage
+                localStorage.removeItem('usuarioLogado');
+                localStorage.removeItem('emailUsuario');
+                // Redireciona para a página de login
+                window.location.href = "TelaLogin.html";
+            };
+
+            return (
+                <button onClick={handleLogout} className="botao-logout">
+                    Sair
+                </button>
+            );
+        }
+
+        // Verifica se o usuário está logado
+        function VerificarLogin() {
+            React.useEffect(() => {
+                const usuarioLogado = localStorage.getItem('usuarioLogado');
+                if (usuarioLogado !== 'true') {
+                    window.location.href = "TelaLogin.html";
+                }
+            }, []);
+
+            return null;
+        }
+
+        function PaginaPrincipal() {
+            return (
+                <div>
+                    <VerificarLogin />
+                    <h1>Bem-vindo à página principal!</h1>
+                    <Logout />
+                </div>
+            );
+        }
+
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<PaginaPrincipal />); 
+    </script>
+</body>
+
+</html>
